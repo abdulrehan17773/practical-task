@@ -1,7 +1,7 @@
-
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Input from "./components/Input";
+import { fetchProducts, addProduct } from "./api/products"; 
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -14,38 +14,25 @@ function App() {
     formState: { errors },
   } = useForm();
 
-  const fetchProducts = async () => {
+
+  const loadProducts = async () => {
     setLoading(true);
-    try {
-      const res = await fetch("/api/products");
-      const data = await res.json();
-      setProducts(data.data.products || []);
-    } catch (err) {
-      console.error("Error fetching products:", err);
-    } finally {
-      setLoading(false);
-    }
+    const productList = await fetchProducts();
+    setProducts(productList);
+    setLoading(false);
   };
 
   useEffect(() => {
-    fetchProducts();
+    loadProducts(); 
   }, []);
 
+  
   const onSubmit = async (data) => {
-    try {
-      const res = await fetch("/api/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (res.ok) {
-        alert("Product added successfully!");
-        reset();
-        fetchProducts();
-      }
-    } catch (err) {
-      console.error("Error adding product:", err);
+    const success = await addProduct(data);
+    if (success) {
+      alert("Product added successfully!");
+      reset();
+      loadProducts(); 
     }
   };
 
