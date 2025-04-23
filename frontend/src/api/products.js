@@ -1,4 +1,4 @@
-// api/products.js
+
 
 // Function to fetch products from the server
 export const fetchProducts = async () => {
